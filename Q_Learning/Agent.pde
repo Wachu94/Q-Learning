@@ -1,6 +1,7 @@
 class Agent
 {
   PVector starting_pos, pos;
+  int id;
   float offset = 0.5;
   color fill = color(255*random(1),255*random(1),155 + 100*random(1));
   int size = 20;
@@ -23,17 +24,26 @@ class Agent
   {
     starting_pos = new PVector(pos_x, pos_y);
     pos = new PVector(starting_pos.x, starting_pos.y);
+    size *= SCALE;
+  }
+  
+  void setID(int id)
+  {
+    this.id = id;
   }
   
   void draw()
   {
     if(AI_ON)
       choose_action(4);
-    fill(0);
+    if (id == 0)
+    {
+      fill(0);
     textSize(20);
     text("Learning rate: " + learning_rate, 20, 35);
-    text("Discount: " + discount, 20, 80);
-    text("Epsilon: " + epsilon, 300, 35);
+    text("Discount: " + discount, 300, 35);
+    text("Epsilon: " + epsilon, 580, 35);
+    }
     
     fill(fill);
     ellipse(TILE_SIZE * (pos.x + offset), TILE_SIZE * (pos.y + 1 + offset), size, size);

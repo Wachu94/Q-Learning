@@ -3,9 +3,10 @@ ArrayList<Agent> agents = new ArrayList<Agent>();
 
 static boolean AI_ON = true;
 
-static float BEST_REWARD = 0.8;
+static float BEST_REWARD;
 
-static final int TILE_SIZE = 100;
+static final float SCALE = 1;
+static final int TILE_SIZE = (int) (100 * SCALE);
 static final int WIDTH = 1000;
 static final int HEIGHT = 800;
 
@@ -19,7 +20,13 @@ void setup()
 {
   frameRate(f_rate);
   size(1000,800);
-  useMap(1,3);
+  reset();
+}
+
+void reset()
+{
+  BEST_REWARD = 0.5;
+  useMap(1, 5);
 }
 
 void draw()
@@ -47,11 +54,14 @@ void keyPressed()
     f_rate *= 2;
   if(key == 'v')
     different_blue = !different_blue;
+  if(key == 'r')
+    reset();
   frameRate(f_rate);
 }
 
 void useMap(int nr, int nr_of_agents)
 {
+  agents.clear();
   switch(nr)
   {
     case 0:
@@ -114,11 +124,13 @@ void useMap(int nr, int nr_of_agents)
   {
     for(int j = 0; j < MAP[0].length; j++)
     {
-      Tile tile = new Tile(new PVector(i,j));
+      Tile tile = new Tile(new PVector(i,j), SCALE);
       tile.score = MAP[i][j];
       TILES[i][j] = tile;
     }
   }
+ 
+  int[] agent_positions = {0};
   
   switch(nr)
   {
@@ -136,11 +148,7 @@ void useMap(int nr, int nr_of_agents)
       TILES[8][5].terminal = true;
       TILES[9][5].terminal = true;
       
-      agents.add(new Agent(0,0));
-      agents.add(new Agent(4,5));
-      agents.add(new Agent(3,2));
-      agents.add(new Agent(9,3));
-      agents.add(new Agent(7,1));
+      agent_positions = new int[] {0, 0, 4, 5, 3, 2, 9, 3, 7, 1};
     break;
     case 1:
       TILES[4][0].terminal = true;
@@ -180,8 +188,18 @@ void useMap(int nr, int nr_of_agents)
       TILES[8][1].terminal = true;
       TILES[8][3].terminal = true;
       
-      for(int i = 0; i<nr_of_agents; i++)
-        agents.add(new Agent(0,6));
+      agent_positions = new int[] {0, 6};
+      
     break;
+  }
+  
+  for (int i=0; i<2*nr_of_agents; i+=2)
+  {
+      agents.add(new Agent(agent_positions[i%agent_positions.length],agent_positions[(i+1)%agent_positions.length]));
+  }
+      
+  for(int i = 0; i<nr_of_agents; i++)
+  {
+    agents.get(i).setID(i);
   }
 }
